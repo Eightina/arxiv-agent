@@ -6,16 +6,22 @@ import random
 from datetime import datetime
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-from enum import Enum, auto
-from Logger import Logger, WarnLogger, InfoLogger
+from tools.Logger import Logger, WarnLogger, InfoLogger
 
 class ArxivCrawler:
-    def __init__(self, inDatedThreshold = 1, outputDir = "./output/raw/"):
+    def __init__(self, url: str, warner: WarnLogger, infoer: InfoLogger, inDatedThreshold = 1, outputDir = "./output/raw/"):
+        if not url:
+            raise ValueError("no url")
+        if not warner or not infoer:
+            raise ValueError("no logger")
+        self.url = url
+        self.warner = warner
+        self.infoer = infoer
         self.outputDir = outputDir
         self.jsonRes = []
-    # self.outputDir = "./output/raw/"
 
-    def fetchUrl(url, retries=3, backoff_factor=0.3, timeout=5):
+
+    def fetchURL(self, url, retries=3, backoff_factor=0.3, timeout=5):
         
         session = requests.Session()
         retryStrategy = Retry(
@@ -31,56 +37,30 @@ class ArxivCrawler:
         try:
             response = session.get(url, timeout=timeout)
             response.raise_for_status()  # raise an exception for 4xx and 5xx status codes
-            return response.text
+            return response
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching URL: {e}")
+            self.warner.log(f"Crawler failing when fetching URL: {e}")
             return None
 
 
     def crawlArxivPage(self):
-        
-        class TaskSize(Enum):
-            TINY = 25
-            MID = 50
-            BIG = 100
-            LARGE = 200
-        url = f"https://arxiv.org/search/advanced?advanced=&terms-0-operator=AND&\
-            terms-0-term=llm&\
-            terms-0-field=all&\
-            classification-computer_science=y&classification-eess=y&\
-            classification-mathematics=y&\
-            classification-physics_archives=all&\
-            classification-statistics=y&\
-            classification-include_cross_list=include&\
-            date-filter_by=all_dates&\
-            date-year=&\
-            date-from_date=&\
-            date-to_date=&\
-            date-date_type=submitted_date&\
-            abstracts=show&\
-            size={TaskSize.TINY.value}&\
-            order=-announced_date_first\
-            ".replace(' ','')
-        response = requests.get(str(url))
+
+        response = self.fetchURL(self.url)
+        if (not response):
+            self.warner.log(f"Crawler reveiving no response when requesting {self.url}")
+            raise ValueError(f"Crawler reveiving no response when requesting {self.url}")
         soup = BeautifulSoup(response.content, "html.parser")
 
-        # for entry in soup.find_all("div", class_="list-title mathjax"):
-        #     title = entry.text.strip()
-        #     abstract_id = entry.find_next("div", class_="list-identifier")
-        #     abstract_url = abstract_id.find_next("a")["href"]
-        #     abstract = get_abstract(abstract_url)
-        #     papers.append({"title": title, "abstract": abstract})
         papers_url = []
         resolved = soup.find_all("p", class_="list-title is-inline-block")
         for paper in resolved:
             paper_url = paper.find_all("a")[0]['href']
             papers_url.append(paper_url)
         
-        
         for (i, paper_url) in enumerate(papers_url):
-            print("fetching page {} / {} in total".format(i, len(papers_url)))
+            self.infoer.log("Crawler fetching page {} / {} in total".format(i, len(papers_url)))
             cur_date = cur_title = cur_authors = cur_abstract = cur_subjects = ""
-            cur_response = requests.get(paper_url)
+            cur_response = self.fetchURL(paper_url)
             if (cur_response):
                 cur_soup = BeautifulSoup(cur_response.content, "html.parser")
                 cur_date = cur_soup.find("div", class_="dateline").text.strip()
@@ -89,7 +69,7 @@ class ArxivCrawler:
                 cur_abstract = cur_soup.find("blockquote", class_="abstract mathjax").text.strip()
                 cur_subjects = cur_soup.find("td", class_="tablecell subjects").text.strip()
             else:
-                print("skipping one")
+                self.warner.log(f"Crawler skipping index {i} @ {paper_url}")
             self.jsonRes.append({
                 "arxiv_site": paper_url,
                 "date": cur_date,
@@ -103,9 +83,10 @@ class ArxivCrawler:
         return self.jsonRes
 
 
-    def saveToJSON(self, data, filename):
-        with open(filename, "w") as f:
+    def saveToJSON(self, data, filePath):
+        with open(filePath, "w") as f:
             json.dump(data, f, indent=4)
+        self.infoer.log(f"Crawler saving json to {filePath}")
 
     def crawlToJSON(self):
         self.crawlArxivPage()
@@ -115,5 +96,6 @@ class ArxivCrawler:
         
 
 if __name__ == "__main__":
-    crawler = ArxivCrawler()
+    crawlURL = "https://arxiv.org/search/advanced?advanced=&terms-0-operator=AND&terms-0-term=llm&terms-0-field=all&classification-computer_science=y&classification-eess=y&classification-mathematics=y&classification-physics_archives=all&classification-statistics=y&classification-include_cross_list=include&date-filter_by=all_dates&date-year=&date-from_date=&date-to_date=&date-date_type=submitted_date&abstracts=show&size=50&order=-announced_date_first"
+    crawler = ArxivCrawler(crawlURL)
     crawler.crawlToJSON()
