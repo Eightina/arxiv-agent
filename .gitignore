@@ -1,6 +1,9 @@
 # data
 .vscode/
 *.ipynb
+logs/
+metagpt/
+workspace/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

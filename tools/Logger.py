@@ -35,7 +35,7 @@ class Logger(ABC):
         """
         
         currentDate = datetime.now().strftime("%Y-%m-%d")
-        logFile = f"./log/crawler_{currentDate}.log"
+        logFile = f"./logs/crawler_{currentDate}.log"
         # set log file
         with open(logFile, "w") as temp:
             pass
