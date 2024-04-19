@@ -29,6 +29,7 @@ class ArxivProcessor:
         self.failedEntries = []
         self.inDatedEntries = []
         self.outDatedEntries = {}
+        self.mdstring = ""
 
     # date extraction
     def extractDate(self, jsonRawDateString: str) -> datetime.date:
@@ -61,17 +62,20 @@ class ArxivProcessor:
         else:
             return False
 
-    def outputEntriesMD(self, inDatedEntries, outDatedEntries, outputDir):
+    def outputEntriesMD(self, inDatedEntries, outDatedEntries, outputDir) -> str:
+        mdstring = ""
         if (len(inDatedEntries) > 0):
             today = datetime.now().date()
-            MDoutput(inDatedEntries, outputDir + "/paper@{}.md".format(today))
+            mdstring = MDoutput(inDatedEntries, outputDir + "/paper@{}.md".format(today))
+            
             
         if (len(outDatedEntries.keys()) > 0):
             keys = list(outDatedEntries.keys())
             for key in keys:
                 MDoutput(outDatedEntries[key], outputDir + "/outdated/paper@{}.md".format(key))
 
-
+        return mdstring
+    
     def process(self):
 
         # read json file
@@ -115,8 +119,8 @@ class ArxivProcessor:
             self.inDatedEntries.append(entry)
         
             # output data as md file
-        self.outputEntriesMD(self.inDatedEntries, self.outDatedEntries, self.outputDir)
-        return self.inDatedEntries
+        self.mdstring = self.outputEntriesMD(self.inDatedEntries, self.outDatedEntries, self.outputDir)
+        return self.mdstring
 
 if __name__ == "__main__":
     crawlURL = "https://arxiv.org/search/advanced?advanced=&terms-0-operator=AND&terms-0-term=llm&terms-0-field=all&classification-computer_science=y&classification-eess=y&classification-mathematics=y&classification-physics_archives=all&classification-statistics=y&classification-include_cross_list=include&date-filter_by=all_dates&date-year=&date-from_date=&date-to_date=&date-date_type=submitted_date&abstracts=show&size=50&order=-announced_date_first"

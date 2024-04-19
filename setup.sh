@@ -54,11 +54,10 @@ if [ ! -d "./output/raw" ]; then
 fi
 
 # create hard links for metagpt tools
-source_dir="./metagpt/custom_tool"
+source_dir="./agent/custom_tools/"
 target_dir="/home/int.orion.que/dev/app/python/lib/python3.9/site-packages/metagpt/tools/libs/"
 # Iterate through all .py files in the source directory
-for file in "$source_dir"/*.py; do
-    # Extract the file name without extension
+for file in "$source_dir"*.py; do
     filename=$(basename "$file" .py)
     
     # Create a hard link in the target directory

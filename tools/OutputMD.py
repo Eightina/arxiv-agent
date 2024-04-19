@@ -1,7 +1,7 @@
 import json
 from typing import List
 
-def generate_markdown(data:List[dict]):
+def generate_markdown(data:List[dict]) -> str:
     markdown = ""
     for entry in data:
         markdown += f"## {entry['title']}\n"
@@ -12,10 +12,11 @@ def generate_markdown(data:List[dict]):
         markdown += f"* [Link]({entry['arxiv_site']})\n\n"
     return markdown
 
-def MDoutput(data:List[dict], outputPath:str):
+def MDoutput(data:List[dict], outputPath:str) -> str:
     # 生成Markdown
     markdown_content = generate_markdown(data)
 
     # 将Markdown写入文件
     with open(outputPath, "w", encoding='gbk', errors='replace') as file:
         file.write(markdown_content)
+    return markdown_content
