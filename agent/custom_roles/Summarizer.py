@@ -3,7 +3,7 @@ from metagpt.logs import logger
 from metagpt.roles.role import Role
 from metagpt.schema import Message
 # from agent.custom_actions.TextActions import ArticleTaxonomize, StructuredSummarize, Summarize
-from agent.custom_actions.TextActions import Summarize
+from agent.custom_actions.TextActions import Summarize, Taxonomize
 from agent.custom_actions.DataActions import StructedCrawl
 
 from metagpt.actions.research import WebBrowseAndSummarize
@@ -17,7 +17,8 @@ class Summarizer(Role):
         super().__init__(**kwargs)
         # self.set_actions([ArticleTaxonomize, StructuredSummarize])
         self._watch([StructedCrawl])
-        self.set_actions([Summarize])
+        # self.set_actions([Summarize])
+        self.set_actions([Taxonomize, Summarize])
         # self._watch([WebBrowseAndSummarize])
         self._set_react_mode(react_mode="by_order")
 
@@ -26,7 +27,7 @@ class Summarizer(Role):
         todo = self.rc.todo  # todo will be ArticleTaxonomize() -> StructuredSummarize()
 
         msg = self.get_memories()[-1]  # find the most recent messages
-        # logger.debug("=====================++++++++++++++++++++"+str(msg))
+        # logger.debug("=====================Summarizer._act msg:===================\n"+str(len(msg)))
         result = await todo.run(msg.content)
         
         outputPath = "./output/summary.md"

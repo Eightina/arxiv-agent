@@ -39,21 +39,44 @@ from metagpt.logs import logger
 #         rsp = await self._aask(prompt)
 
 #         return rsp
+
+    # 在原文中标注每篇论文具体所属的主题，可能是以下任意一种：
+class Taxonomize(Action):
+    PROMPT_TEMPLATE: str = """
+    {}
+    上述文本包含了一系列最新的大语言模型领域的论文的标题，摘要等内容。
+    对每篇论文进行分类，可能是以下任意一个主题：
+    模型架构与性能优化，模型创新应用，模型评估与数据集，模型隐私与安全，模型公平与可解释性，其他
+    """
+    #
+
+    name: str = "Taxonomize"
+
+    async def run(self, mdstring: str) -> str:
+        prompt = self.PROMPT_TEMPLATE.format(mdstring)
+        rsp = await self._aask(prompt)
+        # logger.debug("====================Taxonomize======================\n" + str(type(prompt)))
+        # logger.debug("====================Taxonomize======================\n" + str(type(mdstring)))
+        # logger.debug("====================Taxonomize======================\n" + str(type(mdstring[0])))
+        return mdstring + rsp
+
     
 class Summarize(Action):
     PROMPT_TEMPLATE: str = """
     {}
-    上述文本包含了一系列最新的大语言模型领域的论文的标题，摘要，分类等内容。
-    使用中文，分析每篇文章其解决的问题和方法论。
+    上述文本包含了一系列最新的大语言模型领域的论文的标题，摘要，主题（模型架构与性能优化，模型创新应用，模型评估与数据集，模型隐私与安全，模型公平与可解释性，其他）等内容。
+    使用中文，将相同主题的文章放在一起，并分析每篇文章解决的问题与方法论。
+    最后总结当前大语言模型领域研究的最新趋势，突出重点。
     """
-    # 最后，对这些文章按一定的主题进行汇总，并总结当前大语言模型领域研究的最新趋势，突出重点。
+    #
 
     name: str = "Summarize"
 
     async def run(self, mdstring: str) -> str:
-        prompt = self.PROMPT_TEMPLATE.format(mdstring)
-        logger.info("======================================"+str(len(mdstring)))
+        prompt = self.PROMPT_TEMPLATE.format(mdstring) #???????mdstring is a list????????
+        logger.info("====================Summarize->mdstring======================\n" + str(prompt))
         rsp = await self._aask(prompt)
+        logger.info("====================Summarize->rsp======================\n"+str(len(rsp)))
 
         return rsp
 

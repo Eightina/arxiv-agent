@@ -20,12 +20,12 @@ class SimpleCrawler(Role):
         self.set_actions([StructedCrawl])
         # self._watch([WebBrowseAndSummarize])
 
-    # async def _act(self) -> Message:
-    #     logger.info(f"{self._setting}: to do {self.rc.todo}({self.rc.todo.name})")
-    #     todo = self.rc.todo  # todo will be ArticleTaxonomize() -> StructuredSummarize()
+    async def _act(self) -> Message:
+        logger.info(f"{self._setting}: to do {self.rc.todo}({self.rc.todo.name})")
+        todo = self.rc.todo  # todo will be ArticleTaxonomize() -> StructuredSummarize()
 
-    #     msg = self.get_memories()  # find the most recent messages
-    #     result = await todo.run(msg.content)
-    #     msg = Message(content=result, role=self.profile, cause_by=type(todo))
-    #     self.rc.memory.add(msg)
-    #     return msg
+        msg = self.get_memories()  # find the most recent messages
+        result = await todo.run(msg)
+        msg = Message(content=result, role=self.profile, cause_by=type(todo))
+        self.rc.memory.add(msg)
+        return msg

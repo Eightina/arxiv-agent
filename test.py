@@ -45,8 +45,8 @@ async def main(
 if __name__ == "__main__":
     fire.Fire(main)
 
+# test crawler only
 # from agent.custom_actions.DataActions import StructedCrawl
-
 # s = StructedCrawl()
 # res = s.run()
 # print(res)
