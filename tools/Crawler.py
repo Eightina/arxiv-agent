@@ -9,7 +9,7 @@ from requests.packages.urllib3.util.retry import Retry
 from tools.Logger import Logger, WarnLogger, InfoLogger
 
 class ArxivCrawler:
-    def __init__(self, url: str, warner: WarnLogger, infoer: InfoLogger, inDatedThreshold = 1, outputDir = "./output/raw/"):
+    def __init__(self, url: str, warner: WarnLogger, infoer: InfoLogger, outputDir="./output/raw/"):
         if not url:
             raise ValueError("no url")
         if not warner or not infoer:
