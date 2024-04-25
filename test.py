@@ -5,8 +5,7 @@
 # from metagpt.tools.libs import CustomStructedCrawler
 
 # async def main(requirement: str):
-#     role = DataInterpreter(tools=["CustomStructedCrawler"]) # 集成工具
-#     await role.run(requirement)
+#     role = DataInterpreter(tools=["CustomStructedCrawler"])
 
 # if __name__ == "__main__":
 #     requirement = "please crawl the latest large language models related papers from arxiv and save result"
@@ -49,25 +48,29 @@ async def main(
     await team.run(n_round=n_round)
     
     if os.path.exists(outputPath):
-        
-        # fire.Fire(main(outputPath=outputPath))
-        
-        msger = Messenger(key="1cb2d8e5-acd9-4d75-ae5f-2d08d0f89044z")
+            
+        msger = Messenger(key="1cb2d8e5-acd9-4d75-ae5f-2d08d0f89044")
         
         
-        mediaID0 = msger.fileup(outputPath)
-        filetoSend0 = MsgBody.FL.value
-        filetoSend0['file']['media_id'] = mediaID0
-        msger.sendMsg(filetoSend0)
+        # mediaID0 = msger.fileup(outputPath)
+        # filetoSend0 = MsgBody.FL.value
+        # filetoSend0['file']['media_id'] = mediaID0
+        # msger.sendMsg(filetoSend0)
         
         mediaID1 = msger.fileup(rawPath) 
         filetoSend1 = MsgBody.FL.value
         filetoSend1['file']['media_id'] = mediaID1
         msger.sendMsg(filetoSend1)
-
+        
+        # md = MsgBody.MD.value
+        # with open("output/summary-v1.1ms.md", "r") as f:
+        #     mdtx = f.read()
+        #     md['markdown']['content'] = mdtx
+        # msger.sendMsg(md)
+        
         msgtoSend0 = MsgBody.TX.value
         msgtoSend0['text']['content'] = "Bot communication testing. Sorry for the interruption."
-        msger.sendMsg()
+        msger.sendMsg(msgtoSend0)
 
 if __name__ == "__main__":
     
