@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import re
 from tools.OutputMD import MDoutput
 from tools.Logger import Logger, WarnLogger, InfoLogger
-from tools.AccessFile import getRawPath, loadOrCreateSet, saveSet
+from tools.AccessFile import getRawPath, loadOrCreateRecord, saveRecord
 
 class ArxivProcessor:   
     def __init__(self, crawlURL: str, warner: WarnLogger, infoer: InfoLogger, inDatedThreshold = 1,\
@@ -86,8 +86,8 @@ class ArxivProcessor:
         self.infoer.log("{} entries fetched from Arxiv".format(len(jsonData)))
         print("{} entries fetched from Arxiv".format(len(jsonData)))
         
-        # read in previous accessed papers set
-        record = loadOrCreateSet(self.outputDir)
+        # read in previous accessed papers dictionary {date : list[str]}
+        record = loadOrCreateRecord(self.outputDir)
             
             
         # processing json data in a loop
@@ -106,13 +106,19 @@ class ArxivProcessor:
             if (extractedEntryDate == None):
                 self.warner.log(self.badFormatWarningText.format(idx, entry["arxiv_site"]))
                 if ('badDateFormat' in self.outDatedEntries.keys()):
-                    self.outDatedEntries['outDatedEntries'].append(entry)
+                    self.outDatedEntries['badDateFormat'].append(entry)
                 else:
-                    self.outDatedEntries['outDatedEntries'] = [entry]
+                    self.outDatedEntries['badDateFormat'] = [entry]
                 continue
             
             isCurInDated = self.isEntryInDated(extractedEntryDate)
-            if ((not isCurInDated) or (entry["arxiv_site"] in record)):
+            isSeen = False
+            recordKeys = record.keys()
+            # check if this paper is seen by the record(7days)
+            for key in recordKeys:
+                if entry["arxiv_site"] in record[key]:
+                    isSeen = True
+            if ((not isCurInDated) or isSeen):
                 if (extractedEntryDate in self.outDatedEntries.keys()):
                     self.outDatedEntries[extractedEntryDate].append(entry)
                 else:
@@ -120,10 +126,13 @@ class ArxivProcessor:
                 continue
                     
             self.inDatedEntries.append(entry)
-            record.add(entry["arxiv_site"])
+            if (extractedEntryDate in recordKeys):
+                record[extractedEntryDate].append(entry["arxiv_site"])
+            else:
+                record[extractedEntryDate] = [entry["arxiv_site"]]
         
         # save accessed papers set
-        saveSet(record, self.outputDir)
+        saveRecord(record, self.outputDir)
         self.infoer.log("{} entries for today".format(len(self.inDatedEntries)))
         
         if (len(self.inDatedEntries) == 0):

@@ -27,21 +27,21 @@ def getRawPath(folderPath):
     else:
         return None
 
-def loadOrCreateSet(folderPath):
-    # 如果文件存在，则读取集合
+def loadOrCreateRecord(folderPath):
+    # if exist then access
     filePath = folderPath + "paperdone.pkl"
     if os.path.exists(filePath):
         with open(filePath, 'rb') as file:
             data = pickle.load(file)
             return data
+    # if not, create new one
     else:
-        # 如果文件不存在，则创建一个新的集合
-        data = set()
+        data = {}
         with open(filePath, 'wb') as file:
             pickle.dump(data, file)
         return data
 
-def saveSet(data, folderPath):
+def saveRecord(data, folderPath):
     filePath = folderPath + "paperdone.pkl"
     with open(filePath, 'wb') as file:
         pickle.dump(data, file)

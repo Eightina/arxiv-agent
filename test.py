@@ -18,7 +18,7 @@ from metagpt.team import Team
 from agent.custom_roles.SimpleCrawler import SimpleCrawler
 from agent.custom_roles.Summarizer import Summarizer
 import fire
-from task.Messenger import MsgBody, Messenger
+from tools.Messenger import MsgBody, Messenger
 from datetime import datetime
 import os
 

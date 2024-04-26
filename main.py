@@ -4,7 +4,8 @@ from metagpt.team import Team
 from agent.custom_roles.SimpleCrawler import SimpleCrawler
 from agent.custom_roles.Summarizer import Summarizer
 import fire
-from task.Messenger import MsgBody, Messenger
+from tools.Messenger import MsgBody, Messenger
+from tools.AccessFile import loadOrCreateRecord, saveRecord
 from datetime import datetime
 import os
 
@@ -38,7 +39,7 @@ async def main(
         msger = Messenger(key="1cb2d8e5-acd9-4d75-ae5f-2d08d0f89044")
         
         msgtoSend0 = MsgBody.TX.value
-        msgtoSend0['text']['content'] = "Today is {today}. New papers detected. Summary:".format(today=today)
+        msgtoSend0['text']['content'] = "Goodmorning! Today is {today}. New papers detected. Summary:".format(today=today)
         msger.sendMsg(msgtoSend0)
         
         mediaID0 = msger.fileup(outputPath)
@@ -54,6 +55,18 @@ async def main(
         filetoSend1 = MsgBody.FL.value
         filetoSend1['file']['media_id'] = mediaID1
         msger.sendMsg(filetoSend1)
+        
+        # clear seen papers cache every 7 days, cleaninng records 7 days ago
+        if (today.day % 7 == 0):
+            record = loadOrCreateRecord("./output/")
+            dateToDel = []
+            for date in record.keys():
+                if (abs((today - date)).days >= 7):
+                    dateToDel.append(date)
+            for date in dateToDel:
+                del record[date]
+            saveRecord(record, "./output/")
+                
 
 
 if __name__ == "__main__":
