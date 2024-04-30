@@ -52,6 +52,11 @@ if [ ! -d "./output/raw" ]; then
     mkdir ./output/raw
     echo "Created directory: ./output/raw"
 fi
+if [ ! -d "./output/raw" ]; then
+    mkdir ./output/pdf
+    echo "Created directory: ./output/pdf"
+fi
+
 
 # create hard links for metagpt tools
 source_dir="./agent/custom_tools/"

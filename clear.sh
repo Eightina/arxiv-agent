@@ -10,7 +10,7 @@ else
 fi
 
 OUTPUT_DIR="/home/int.orion.que/dev/my_programs/arxiv-agent/output"
-FILE_TYPES=("*.json" "*.md")
+FILE_TYPES=("*.json" "*.md" "*.pdf")
 # loop through all file types
 if [ -d "$OUTPUT_DIR" ]; then
     for FILE_TYPE in "${FILE_TYPES[@]}"; do

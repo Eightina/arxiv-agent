@@ -68,6 +68,7 @@ class ArxivCrawler:
                 cur_authors = cur_soup.find("div", class_="authors").text
                 cur_abstract = cur_soup.find("blockquote", class_="abstract mathjax").text.strip()
                 cur_subjects = cur_soup.find("td", class_="tablecell subjects").text.strip()
+                cur_filelink = "https://arxiv.org" + cur_soup.find("a", class_="abs-button download-pdf")['href']
             else:
                 self.warner.log(f"Crawler skipping index {i} @ {paper_url}")
             self.jsonRes.append({
@@ -76,7 +77,8 @@ class ArxivCrawler:
                 "title": cur_title,
                 "authors": cur_authors,
                 "abstract": cur_abstract,
-                "subjects": cur_subjects
+                "subjects": cur_subjects,
+                "file_link": cur_filelink
             })
             time.sleep(random.uniform(0.01, 0.05))
 

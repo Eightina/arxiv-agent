@@ -62,20 +62,26 @@ class ArxivProcessor:
         else:
             return False
 
-    def outputEntriesMD(self, inDatedEntries, outDatedEntries, outputDir) -> str:
+    def outputEntriesMD(self) -> str:
         mdstring = ""
-        if (len(inDatedEntries) > 0):
+        if (len(self.inDatedEntries) > 0):
             today = datetime.now().date()
-            mdstring = MDoutput(inDatedEntries, outputDir + "paper@{}.md".format(today))
+            mdstring = MDoutput(self.inDatedEntries, self.outputDir + "paper@{}.md".format(today))
             
             
-        if (len(outDatedEntries.keys()) > 0):
-            keys = list(outDatedEntries.keys())
+        if (len(self.outDatedEntries.keys()) > 0):
+            keys = list(self.outDatedEntries.keys())
             for key in keys:
-                MDoutput(outDatedEntries[key], outputDir + "outdated/paper@{}.md".format(key))
+                MDoutput(self.outDatedEntries[key], self.outputDir + "outdated/paper@{}.md".format(key))
 
         return mdstring
-    
+
+    def getPDF(self, entry):
+        url = entry["file_link"]
+        title = entry["title"]
+        with open(self.outputDir+"pdf/{}.pdf".format(title), "wb") as f:
+            f.write(self.fetchURL(url)._content)
+
     def process(self):
 
         # read json file
@@ -111,10 +117,10 @@ class ArxivProcessor:
                     self.outDatedEntries['badDateFormat'] = [entry]
                 continue
             
+            # check if this paper is seen by the record(7days)
             isCurInDated = self.isEntryInDated(extractedEntryDate)
             isSeen = False
             recordKeys = record.keys()
-            # check if this paper is seen by the record(7days)
             for key in recordKeys:
                 if entry["arxiv_site"] in record[key]:
                     isSeen = True
