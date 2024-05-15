@@ -5,6 +5,7 @@ from enum import Enum
 from metagpt.logs import logger
 from urllib import parse
 
+# an enum of all kinds of message bodies
 class MsgBody(Enum):
     TX = {
         "msgtype": "text",
@@ -35,7 +36,7 @@ class MsgBody(Enum):
         }
     }
 
-# https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=1cb2d8e5-acd9-4d75-ae5f-2d08d0f89044
+# A messenger that can upload file and send messages to bot
 class Messenger:
     
     def __init__(self, key):

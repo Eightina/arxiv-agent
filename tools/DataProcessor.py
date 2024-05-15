@@ -146,7 +146,7 @@ class ArxivProcessor:
             return ""
             # output data as md file
             
-        self.mdstring = self.outputEntriesMD(self.inDatedEntries, self.outDatedEntries, self.outputDir)
+        self.mdstring = self.outputEntriesMD()
         return self.mdstring
 
 if __name__ == "__main__":

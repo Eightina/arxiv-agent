@@ -1,5 +1,7 @@
 import os
 import pickle
+from markdown import markdown
+import pdfkit
 
 def getRawPath(folderPath):
     # list all files
@@ -45,3 +47,18 @@ def saveRecord(data, folderPath):
     filePath = folderPath + "paperdone.pkl"
     with open(filePath, 'wb') as file:
         pickle.dump(data, file)
+        
+def convertPDF(inputFile: str, outputFile: str, path_wk = r"/home/int.orion.que/dev/app/wkhtmltopdf/wkhtmltox/bin/wkhtmltopdf"):
+    
+    config = pdfkit.configuration(wkhtmltopdf=path_wk)
+
+    # inputFile = folderPath + name + ".md"
+    # outputFile = folderPath + name + ".pdf"
+    
+    with open(inputFile, "r") as f:
+        html_text = markdown(f.read(), output_format="xhtml")
+
+    # print(html_text)
+    pdfkit.from_string(html_text, outputFile, configuration=config, options={'encoding': "UTF-8"})
+
+        
