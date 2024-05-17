@@ -17,6 +17,6 @@ def MDoutput(data:List[dict], outputPath:str) -> str:
     markdown_content = generate_markdown(data)
 
     # 将Markdown写入文件
-    with open(outputPath, "w", encoding='gbk', errors='replace') as file:
+    with open(outputPath, "w", encoding='UTF-8', errors='replace') as file:
         file.write(markdown_content)
     return markdown_content
