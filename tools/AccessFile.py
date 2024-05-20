@@ -2,6 +2,9 @@ import os
 import pickle
 from markdown import markdown
 import pdfkit
+import json
+from typing import List
+
 
 def getRawPath(folderPath):
     # list all files
@@ -47,7 +50,29 @@ def saveRecord(data, folderPath):
     filePath = folderPath + "paperdone.pkl"
     with open(filePath, 'wb') as file:
         pickle.dump(data, file)
-        
+
+
+def generate_markdown(data:List[dict]) -> str:
+    markdown = ""
+    for entry in data:
+        markdown += f"## {entry['title']}\n"
+        markdown += f"* Authors: {entry['authors']}\n"
+        markdown += f"* Date: {entry['date']}\n"
+        markdown += f"* Abstract: {entry['abstract']}\n"
+        markdown += f"* Subjects: {entry['subjects']}\n"
+        markdown += f"* [Link]({entry['arxiv_site']})\n\n"
+    return markdown
+
+def MDoutput(data:List[dict], outputPath:str) -> str:
+    # 生成Markdown
+    markdown_content = generate_markdown(data)
+
+    # 将Markdown写入文件
+    with open(outputPath, "w", encoding='UTF-8', errors='replace') as file:
+        file.write(markdown_content)
+    return markdown_content
+
+
 def convertPDF(inputFile: str, outputFile: str, path_wk = r"/home/int.orion.que/dev/app/wkhtmltopdf/wkhtmltox/bin/wkhtmltopdf"):
     
     config = pdfkit.configuration(wkhtmltopdf=path_wk)

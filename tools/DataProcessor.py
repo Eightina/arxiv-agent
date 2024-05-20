@@ -1,9 +1,8 @@
 import json
 from datetime import datetime, timedelta
 import re
-from tools.OutputMD import MDoutput
 from tools.Logger import Logger, WarnLogger, InfoLogger
-from tools.AccessFile import getRawPath, loadOrCreateRecord, saveRecord
+from tools.AccessFile import getRawPath, loadOrCreateRecord, saveRecord, MDoutput
 
 class ArxivProcessor:   
     def __init__(self, crawlURL: str, warner: WarnLogger, infoer: InfoLogger, inDatedThreshold = 1,\
