@@ -47,8 +47,8 @@ class ArxivCrawler:
 
         response = self.fetchURL(self.url)
         if (not response):
-            self.warner.log(f"Crawler reveiving no response when requesting {self.url}")
-            raise ValueError(f"Crawler reveiving no response when requesting {self.url}")
+            self.warner.log(f"Crawler receiving no response when requesting {self.url}")
+            raise ValueError(f"Crawler receiving no response when requesting {self.url}")
         soup = BeautifulSoup(response.content, "html.parser")
 
         papers_url = []

@@ -40,7 +40,6 @@ from metagpt.logs import logger
 
 #         return rsp
 
-    # 在原文中标注每篇论文具体所属的主题，可能是以下任意一种：
 class Taxonomize(Action):
     PROMPT_TEMPLATE: str = """
     {}
@@ -73,7 +72,7 @@ class Summarize(Action):
     name: str = "Summarize"
 
     async def run(self, mdstring: str) -> str:
-        prompt = self.PROMPT_TEMPLATE.format(mdstring) #???????mdstring is a list????????
+        prompt = self.PROMPT_TEMPLATE.format(mdstring)
         logger.info("====================Summarize->mdstring======================\n" + str(prompt))
         rsp = await self._aask(prompt)
         logger.info("====================Summarize->rsp======================\n"+str(len(rsp)))
